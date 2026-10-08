@@ -12,9 +12,9 @@
   --charcoal-deep: #131417;
   --ink: #17181b;
   --ink-muted: #4a4e55;
-  --bronze: #d19b2e;
-  --bronze-strong: #9c6410;
-  --bronze-tint: #faefd6;
+  --bronze: #c38c50;
+  --bronze-strong: #96662f;
+  --bronze-tint: #faeedf;
   --on-bronze: #ffffff;
   --on-charcoal: #ffffff;
   --success: #2e6a50;
@@ -55,7 +55,7 @@
 
   /* Interaction fills for menus, calendar cells and focus outlines (not in the design file). */
   --ow-hover: rgba(23, 24, 27, 0.05);
-  --ow-outline: rgba(156, 100, 16, 0.22);
+  --ow-outline: rgba(150, 102, 47, 0.22);
   color-scheme: light;
 }
 
@@ -69,16 +69,16 @@
   --charcoal-deep: #101114;
   --ink: #faf8f4;
   --ink-muted: #c2bdb4;
-  --bronze: #e3aa3c;
-  --bronze-strong: #f2bf55;
-  --bronze-tint: #3b2c12;
+  --bronze: #ebb575;
+  --bronze-strong: #fec888;
+  --bronze-tint: #3d2f20;
   --on-bronze: #131417;
   --success: #86cfa9;
   --danger: #f19a90;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
   --shadow-float: 0 24px 60px rgba(0, 0, 0, 0.45);
   --ow-hover: rgba(244, 241, 236, 0.08);
-  --ow-outline: rgba(242, 191, 85, 0.28);
+  --ow-outline: rgba(254, 200, 136, 0.28);
   color: var(--ink);
 }
 

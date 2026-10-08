@@ -24,7 +24,7 @@ const theme: ThemeConfig = {
   cssVar: { key: "ow" },
   hashed: false,
   token: {
-    colorPrimary: "#9c6410", // bronze-strong
+    colorPrimary: "#96662f", // bronze-strong
     colorText: "#17181b", // ink
     colorTextSecondary: "#5f636a", // ink-muted
     colorTextPlaceholder: "#5f636a",
@@ -35,7 +35,7 @@ const theme: ThemeConfig = {
     colorBgLayout: "#f6f4f1",
     colorError: "#a8322a",
     colorSuccess: "#2e6a50",
-    colorLink: "#9c6410",
+    colorLink: "#96662f",
     fontFamily: "var(--font-sans)",
     fontSize: 15,
     borderRadius: 14, // radius-md
