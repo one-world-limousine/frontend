@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { site, telHref } from "@/lib/site";
-import markDark from "@/public/brand/mark-gold-dark-bg.png";
-import markLight from "@/public/brand/mark-bronze-light-bg.png";
+import mark from "@/public/brand/mark-gold-dark-bg.png";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
 import { AnnouncementBar } from "./AnnouncementBar";
@@ -15,12 +14,23 @@ export function NavBar() {
     <>
       {/* Above the sticky header: it scrolls away while the header stays. */}
       <AnnouncementBar />
-      <header className="ow-nav">
+      {/* Always a charcoal band, whatever the page theme, so the gold mark stands out. */}
+      <header className="ow-nav" data-theme="dark">
         <div className="ow-nav-in">
-          <Link href="/" className="ow-nav-home" aria-label={`${site.name}, home`}>
-            {/* Both marks are tiny; CSS shows the one for the current theme. Eager: above the fold on every page. */}
-            <Image className="ow-nav-logo ow-on-light" src={markLight} alt={site.name} height={52} loading="eager" fetchPriority="high" />
-            <Image className="ow-nav-logo ow-on-dark" src={markDark} alt="" height={52} loading="eager" />
+          <Link
+            href="/"
+            className="ow-nav-home"
+            aria-label={`${site.name}, home`}
+          >
+            {/* Eager: above the fold on every page. */}
+            <Image
+              className="ow-nav-logo"
+              src={mark}
+              alt={site.name}
+              height={72}
+              loading="eager"
+              fetchPriority="high"
+            />
           </Link>
           <NavLinks />
           <div className="ow-nav-tail">
