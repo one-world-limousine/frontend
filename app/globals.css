@@ -503,17 +503,10 @@ body {
   height: var(--nav-logo);
   width: auto;
   display: block;
-  /* The artwork's gold is pale; lift saturation so it reads as polished gold on charcoal. */
-  filter: saturate(1.6) contrast(1.08)
-    drop-shadow(0 0 14px rgba(227, 170, 60, 0.28));
-  transition:
-    transform 0.25s ease,
-    filter 0.25s ease;
+  transition: transform 0.25s ease;
 }
 .ow-nav-home:hover .ow-nav-logo {
   transform: scale(1.04);
-  filter: saturate(1.7) contrast(1.1)
-    drop-shadow(0 0 18px rgba(227, 170, 60, 0.45));
 }
 .ow-nav-primary {
   margin: 0 auto;
