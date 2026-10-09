@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { site, telHref } from "@/lib/site";
-import mark from "@/public/brand/mark-gold-dark-bg.png";
+import mark from "@/public/brand/emblem-gold-dark-bg.png";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
 import { AnnouncementBar } from "./AnnouncementBar";

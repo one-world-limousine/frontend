@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { addressLine, phones, site } from "@/lib/site";
-import logo from "@/public/brand/logo-gold-dark-bg.png";
+import logo from "@/public/brand/emblem-logo-gold-dark-bg.png";
 import { Icon } from "../ui/Icon";
 
 const columns = [
