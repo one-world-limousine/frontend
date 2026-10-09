@@ -10,14 +10,14 @@ export const bookingModes: { id: BookingMode; label: string; icon: IconName }[] 
   { id: "airport", label: "Airport", icon: "plane" },
 ];
 
-export const durations = ["2 hours (minimum)", "3 hours", "4 hours", "6 hours", "8 hours", "Full day"];
+export const durations = ["2 hours", "3 hours", "4 hours", "6 hours", "8 hours", "Full day"];
 
 export const services = [
   {
     number: "01",
     title: "Airport transfers",
     tagline: "Offered at short notice",
-    text: "Flight tracking, meet-and-greet at arrivals and a chauffeur who waits when you are delayed.",
+    text: "Commercial and private airports, for travellers, pilots and jet passengers. The first 20 minutes of waiting at arrivals are free.",
     mode: "airport",
     image: images.services.airport,
   },
@@ -25,7 +25,7 @@ export const services = [
     number: "02",
     title: "Hourly chauffeur",
     tagline: "At your request",
-    text: "A car and chauffeur for as long as the day needs: meetings, shopping or an evening out.",
+    text: "A car and chauffeur for as long as the day needs: meetings, a city tour, a wedding or an evening out.",
     mode: "hourly",
     image: images.services.hourly,
   },
@@ -33,7 +33,7 @@ export const services = [
     number: "03",
     title: "Corporate travel",
     tagline: "Easily arranged",
-    text: "Account billing, roadshows and executive transport with one point of contact.",
+    text: "Airport runs, meetings and events for your executives, with packages tailored to your company.",
     mode: "transfer",
     image: images.services.corporate,
   },
@@ -41,7 +41,7 @@ export const services = [
     number: "04",
     title: "Point to point",
     tagline: "You will arrive on time",
-    text: "Door to door across the city or between cities, priced up front.",
+    text: "Dinner, a museum, a wine tasting or across town, door to door and quoted before you ride.",
     mode: "transfer",
     image: images.services.point,
   },
@@ -50,16 +50,21 @@ export const services = [
 /** Messages that scroll in the announcement bar above the header. */
 export const announcements: { icon: IconName; text: string; href?: string }[] = [
   { icon: "phone", text: "Riding today? Call +1 (314) 800-8319 for last-minute bookings", href: "tel:+13148008319" },
-  { icon: "plane", text: "Flight tracking and free waiting on every airport pick-up" },
+  { icon: "plane", text: "First 20 minutes of waiting free on airport arrivals" },
+  { icon: "clock", text: "Need a car soon? Book as little as 30 minutes before pick-up", href: "/book" },
   { icon: "calendar", text: "Weekly packages for pre-booked clients", href: "/contact" },
   { icon: "map-pin", text: "Chauffeured across Greater St. Louis, to STL and beyond" },
   { icon: "route", text: "Book online in two minutes and see your fare estimate", href: "/book" },
 ];
 
 export const points: { icon: IconName; title: string; text: string }[] = [
-  { icon: "shield-check", title: "Professional chauffeurs", text: "Vetted, suited and trained, with more than ten years on the road." },
-  { icon: "car", title: "An all-black fleet", text: "Late-model sedans, SUVs and vans, cleaned and disinfected before every ride." },
-  { icon: "clock", title: "On time, every time", text: "We track your flight and your traffic so the car is waiting, not you." },
+  { icon: "calendar", title: "Over 10 years of experience", text: "More than a decade of chauffeured travel, built on reliability, courtesy and care." },
+  { icon: "shield-check", title: "Professional chauffeurs", text: "Experienced chauffeurs trained in safety and customer care." },
+  { icon: "car", title: "An all-black luxury fleet", text: "Immaculate sedans, SUVs and Sprinter vans, mechanically inspected on a regular schedule." },
+  { icon: "clock", title: "On-time, reliable service", text: "Your chauffeur arrives on time, so you arrive on time." },
+  { icon: "check", title: "Cleaned and disinfected daily", text: "Every vehicle is disinfected daily and cleaned inside and out." },
+  { icon: "building", title: "Trusted by corporate and private clients", text: "Executives, families and frequent travellers trust us with their rides." },
+  { icon: "user", title: "Personalized service for every ride", text: "Stops on the way, trip reminders and packages for weekly clients, arranged around you." },
   { icon: "globe", title: "One booking, worldwide", text: "Book in the US and ride with the same standard in cities around the world." },
 ];
 

@@ -276,7 +276,7 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                   <Input prefix={prefix("phone")} placeholder="+1 (212) 555-0147" type="tel" autoComplete="tel" inputMode="tel" />
                 </Form.Item>
                 <Form.Item className="bk-span" name="notes" label={label("Notes for your chauffeur")}>
-                  <Input.TextArea rows={4} placeholder="Child seat, name board text, a stop on the way" maxLength={500} showCount />
+                  <Input.TextArea rows={4} placeholder="A stop on the way, extra luggage, anything we should know" maxLength={500} showCount />
                 </Form.Item>
               </div>
 

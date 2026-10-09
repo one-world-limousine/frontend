@@ -67,8 +67,8 @@ export default function Home() {
               </div>
               <dl className="hp-trust ow-enter-fade ow-delay-3">
                 <div><dt>10+ years</dt><dd>of chauffeured service</dd></div>
-                <div><dt>24/7</dt><dd>reservations</dd></div>
-                <div><dt>Daily</dt><dd>vehicle sanitising</dd></div>
+                <div><dt>30 min</dt><dd>last-minute booking</dd></div>
+                <div><dt>Daily</dt><dd>vehicle disinfecting</dd></div>
               </dl>
             </div>
             <Photo
@@ -162,14 +162,14 @@ export default function Home() {
             <div className="hp-cta" data-theme="dark">
               <div>
                 <h2 id="cta-title">Wherever you land, your car is waiting.</h2>
-                <p>Reserve online in two minutes, or call us any hour.</p>
+                <p>For questions, quotes or custom travel packages, we&rsquo;re here to help. We reply within 24 hours.</p>
               </div>
               <div className="ow-row">
                 <Button href="/book" size="lg">
                   Book your ride
                 </Button>
                 <Button href={telHref} size="lg" variant="secondary" iconLeft="phone" icon={null}>
-                  Call 24/7
+                  Call us
                 </Button>
               </div>
             </div>

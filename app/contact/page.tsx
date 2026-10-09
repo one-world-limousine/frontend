@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: "Can I get a quote for an event?",
-    a: "Weddings, parties and corporate events are quoted individually. Tell us the date, the number of guests and the venues in your message.",
+    a: "Weddings, parties, proms and corporate events are quoted individually. Book party vehicles at least 72 hours ahead, and tell us the date, the number of guests and the venues in your message.",
   },
 ];
 

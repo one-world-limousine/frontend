@@ -11,16 +11,16 @@ import { phones, site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Book a chauffeur",
   description:
-    "Reserve an airport transfer, hourly chauffeur or point-to-point ride in minutes. Choose your vehicle, add your flight and we confirm your chauffeur and fare by email.",
+    "Reserve an airport transfer, hourly chauffeur or point-to-point ride. Choose your vehicle, see an estimated fare and we confirm your booking within 24 hours.",
   alternates: { canonical: "/book" },
   openGraph: { url: "/book", title: `Book a chauffeur | ${site.name}` },
 };
 
 const included = [
-  "Flight tracking and free waiting on airport pick-ups",
-  "Meet-and-greet with a name board at arrivals",
-  "Fare confirmed before your ride, tolls included",
-  "Vehicle cleaned and disinfected before every trip",
+  "First 20 minutes of waiting free at airport arrivals",
+  "Complimentary reminders and notifications for pre-booked trips",
+  "An estimated fare before you book, confirmed by our team",
+  "A vehicle cleaned and disinfected daily",
 ];
 
 export default function BookPage() {

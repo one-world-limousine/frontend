@@ -14,7 +14,7 @@ export const site = {
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
   tagline: "Professional. Reliable. Luxury-focused.",
   description:
-    "Chauffeured airport transfers, hourly chauffeurs, corporate travel and point-to-point rides from the United States to cities worldwide. Professional chauffeurs, an all-black fleet, reservations 24/7.",
+    "Chauffeured airport transfers, hourly chauffeurs, corporate travel and point-to-point rides from the United States to cities worldwide. Professional chauffeurs, an all-black fleet, over 10 years of experience.",
   phone: phones[0].number,
   email: "info@eapremiumtransportation.com",
   address: {
