@@ -93,6 +93,13 @@ export function ContactForm() {
               </Form.Item>
             </div>
 
+            {/* Honeypot: hidden from people, so only bots fill it in. */}
+            <div className="ow-hp" aria-hidden="true">
+              <Form.Item name="website" label="Website">
+                <Input tabIndex={-1} autoComplete="off" />
+              </Form.Item>
+            </div>
+
             {status === "error" && (
               <p className="ct-error" role="alert">
                 <Icon name="alert" /> We could not send your message. Try again, or call {phones[0].number}.

@@ -57,6 +57,9 @@ export function useActiveNav() {
     setSection(label);
   };
 
-  const active: NavLabel | undefined = onHome ? section : navLinks.find((l) => l.href === pathname)?.label;
+  // Off the home page, a link stays selected on its sub-pages too (Blog on /blog/<post>).
+  const active: NavLabel | undefined = onHome
+    ? section
+    : navLinks.find((l) => l.href === pathname || (l.href !== "/" && pathname.startsWith(`${l.href}/`)))?.label;
   return { active, select, onHome };
 }

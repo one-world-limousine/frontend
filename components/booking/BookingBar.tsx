@@ -12,13 +12,23 @@ import { Icon } from "../ui/Icon";
 import { LocationField, pickedPlaceRule } from "./LocationField";
 import { ModeTabs } from "./ModeTabs";
 
-type Values = { pickup?: Place; dropoff?: Place; duration?: string; date?: Dayjs; time?: Dayjs };
+type Values = {
+  pickup?: Place;
+  dropoff?: Place;
+  duration?: string;
+  date?: Dayjs;
+  time?: Dayjs;
+};
 
 const label = (text: string) => <span className="ow-field-label">{text}</span>;
 const disablePast = (d: Dayjs) => d.isBefore(dayjs().startOf("day"));
 
 /** The quick-booking panel on the home page. Collects the trip, then hands it to /book. */
-export function BookingBar({ defaultMode = "transfer" }: { defaultMode?: BookingMode }) {
+export function BookingBar({
+  defaultMode = "transfer",
+}: {
+  defaultMode?: BookingMode;
+}) {
   const [mode, setMode] = useState<BookingMode>(defaultMode);
   const [form] = Form.useForm<Values>();
   const router = useRouter();
@@ -46,7 +56,10 @@ export function BookingBar({ defaultMode = "transfer" }: { defaultMode?: Booking
         requiredMark={false}
         onFinish={onFinish}
         aria-label="Book a chauffeur"
-        initialValues={{ time: dayjs("09:00", "HH:mm"), duration: durations[0] }}
+        initialValues={{
+          time: dayjs("09:00", "HH:mm"),
+          duration: durations[0],
+        }}
       >
         <div className="ow-book-grid">
           <Form.Item
@@ -55,25 +68,46 @@ export function BookingBar({ defaultMode = "transfer" }: { defaultMode?: Booking
             validateTrigger={["onChange", "onBlur"]}
             rules={[pickedPlaceRule("Choose a pick-up from the suggestions")]}
           >
-            <LocationField placeholder={mode === "airport" ? "Airport (STL, JFK) or address" : "Address, hotel or airport"} />
+            <LocationField
+              placeholder={
+                mode === "airport"
+                  ? "Airport (STL, JFK) or address"
+                  : "Address, hotel or airport"
+              }
+            />
           </Form.Item>
 
           {mode === "hourly" ? (
             <Form.Item name="duration" label={label("Duration")}>
-              <Select prefix={<Icon name="clock" className="ow-prefix" />} options={durations.map((d) => ({ value: d, label: d }))} />
+              <Select
+                prefix={<Icon name="clock" className="ow-prefix" />}
+                options={durations.map((d) => ({ value: d, label: d }))}
+              />
             </Form.Item>
           ) : (
             <Form.Item
               name="dropoff"
               label={label("Drop-off")}
               validateTrigger={["onChange", "onBlur"]}
-              rules={[pickedPlaceRule("Choose a drop-off from the suggestions")]}
+              rules={[
+                pickedPlaceRule("Choose a drop-off from the suggestions"),
+              ]}
             >
-              <LocationField placeholder={mode === "airport" ? "Airport, address or hotel" : "Address, hotel or venue"} />
+              <LocationField
+                placeholder={
+                  mode === "airport"
+                    ? "Airport, address or hotel"
+                    : "Address, hotel or venue"
+                }
+              />
             </Form.Item>
           )}
 
-          <Form.Item name="date" label={label("Date")} rules={[{ required: true, message: "Choose a date" }]}>
+          <Form.Item
+            name="date"
+            label={label("Date")}
+            rules={[{ required: true, message: "Choose a date" }]}
+          >
             <DatePicker
               prefix={<Icon name="calendar" className="ow-prefix" />}
               suffixIcon={null}
@@ -83,7 +117,11 @@ export function BookingBar({ defaultMode = "transfer" }: { defaultMode?: Booking
               inputReadOnly
             />
           </Form.Item>
-          <Form.Item name="time" label={label("Time")} rules={[{ required: true, message: "Choose a time" }]}>
+          <Form.Item
+            name="time"
+            label={label("Time")}
+            rules={[{ required: true, message: "Choose a time" }]}
+          >
             <TimePicker
               prefix={<Icon name="clock" className="ow-prefix" />}
               suffixIcon={null}

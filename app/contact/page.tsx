@@ -11,7 +11,7 @@ import { addressLine, phones, site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact us",
-  description: `Call, text or email ${site.name} in St. Charles, MO. Reservations ${phones[0].number}, last-minute bookings ${phones[2].number}. We reply within ${site.replyTime}.`,
+  description: `Call, text or email ${site.name} in St. Charles, MO. Reservations ${phones[0].number}. We reply within ${site.replyTime}.`,
   alternates: { canonical: "/contact" },
   openGraph: { url: "/contact", title: `Contact us | ${site.name}` },
 };
@@ -50,7 +50,12 @@ const contactJsonLd = {
 export default function ContactPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd).replace(/</g, "\\u003c") }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(contactJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <NavBar />
       <main id="main" className="bk-page">
         <div className="ow-wrap">
@@ -64,7 +69,10 @@ export default function ContactPage() {
           <div className="bk-grid">
             <ContactForm />
 
-            <aside className="bk-aside ct-aside" aria-label="Other ways to reach us">
+            <aside
+              className="bk-aside ct-aside"
+              aria-label="Other ways to reach us"
+            >
               <div className="bk-card">
                 <h2>Call us</h2>
                 <ul className="bk-list">
@@ -72,7 +80,9 @@ export default function ContactPage() {
                     <li key={p.number}>
                       <Icon name="phone" />
                       <span>
-                        <a className="ct-link" href={p.href}>{p.number}</a>
+                        <a className="ct-link" href={p.href}>
+                          {p.number}
+                        </a>
                         <small>{p.label}</small>
                       </span>
                     </li>
@@ -85,14 +95,18 @@ export default function ContactPage() {
                   <li>
                     <Icon name="mail" />
                     <span>
-                      <a className="ct-link" href={`mailto:${site.email}`}>{site.email}</a>
+                      <a className="ct-link" href={`mailto:${site.email}`}>
+                        {site.email}
+                      </a>
                       <small>Replies within {site.replyTime}</small>
                     </span>
                   </li>
                   <li>
                     <Icon name="phone" />
                     <span>
-                      <a className="ct-link" href={sms}>Send a text message</a>
+                      <a className="ct-link" href={sms}>
+                        Send a text message
+                      </a>
                       <small>{site.smsPhone}</small>
                     </span>
                   </li>
@@ -103,26 +117,45 @@ export default function ContactPage() {
         </div>
 
         {/* Office + map */}
-        <section className="ow-wrap ct-office" aria-labelledby="ct-office-title">
+        {/*<section
+          className="ow-wrap ct-office"
+          aria-labelledby="ct-office-title"
+        >
           <Reveal className="ct-office-grid">
             <div className="ct-office-copy">
-              <SectionHeading id="ct-office-title" eyebrow="Our base" title="St. Charles, Missouri" size="md" />
+              <SectionHeading
+                id="ct-office-title"
+                eyebrow="Our base"
+                title="St. Charles, Missouri"
+                size="md"
+              />
               <address className="ct-address">
                 <Icon name="map-pin" />
                 <span>{addressLine}</span>
               </address>
               <p className="ow-sh-lead">
-                Chauffeured rides across Greater St. Louis, to and from STL and the airports beyond it, and onward to cities around the world.
+                Chauffeured rides across Greater St. Louis, to and from STL and
+                the airports beyond it, and onward to cities around the world.
               </p>
             </div>
-            <MapFacade lat={site.geo.lat} lon={site.geo.lon} label={addressLine} directionsHref={directions} />
+            <MapFacade
+              lat={site.geo.lat}
+              lon={site.geo.lon}
+              label={addressLine}
+              directionsHref={directions}
+            />
           </Reveal>
-        </section>
+        </section>*/}
 
         {/* FAQ */}
         <section className="ow-wrap ct-faq" aria-labelledby="ct-faq-title">
           <Reveal>
-            <SectionHeading id="ct-faq-title" eyebrow="Good to know" title="Before you write" size="md" />
+            <SectionHeading
+              id="ct-faq-title"
+              eyebrow="Good to know"
+              title="Before you write"
+              size="md"
+            />
           </Reveal>
           <Reveal className="ct-faq-list">
             {faqs.map((f) => (
@@ -138,15 +171,26 @@ export default function ContactPage() {
         </section>
 
         {/* Riding today */}
-        <section className="ow-wrap hp-cta-wrap" aria-labelledby="ct-today-title">
+        <section
+          className="ow-wrap hp-cta-wrap"
+          aria-labelledby="ct-today-title"
+        >
           <Reveal>
             <div className="hp-cta" data-theme="dark">
               <div>
                 <h2 id="ct-today-title">Riding today?</h2>
-                <p>For same-day bookings and last-minute changes, call us directly.</p>
+                <p>
+                  For same-day bookings and last-minute changes, call us
+                  directly.
+                </p>
               </div>
               <div className="ow-row">
-                <Button href={lastMinute.href} size="lg" iconLeft="phone" icon={null}>
+                <Button
+                  href={lastMinute.href}
+                  size="lg"
+                  iconLeft="phone"
+                  icon={null}
+                >
                   {lastMinute.number}
                 </Button>
                 <Button href="/book" size="lg" variant="secondary">

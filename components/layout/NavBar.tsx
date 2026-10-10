@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { site, telHref } from "@/lib/site";
-import mark from "@/public/brand/emblem-gold-dark-bg.png";
+import logo from "@/public/brand/emblem-logo-gold-dark-bg.png";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
 import { AnnouncementBar } from "./AnnouncementBar";
@@ -25,9 +25,9 @@ export function NavBar() {
             {/* Eager: above the fold on every page. */}
             <Image
               className="ow-nav-logo"
-              src={mark}
+              src={logo}
               alt={site.name}
-              height={72}
+              height={80}
               loading="eager"
               fetchPriority="high"
             />

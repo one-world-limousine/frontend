@@ -20,6 +20,8 @@ const columns = [
       { label: "Our fleet", href: "/#fleet" },
       { label: "Why One World", href: "/#why" },
       { label: "Book a ride", href: "/book" },
+      { label: "Blog", href: "/blog" },
+      { label: "Drive for us", href: "/drive-for-us" },
       { label: "Contact us", href: "/contact" },
     ],
   },
