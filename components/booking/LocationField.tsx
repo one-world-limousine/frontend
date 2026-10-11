@@ -4,6 +4,7 @@ import { AutoComplete, Spin } from "antd";
 import { useEffect, useRef, useState, type FocusEvent } from "react";
 import { places, type Place } from "@/lib/places";
 import { Icon } from "../ui/Icon";
+import { prefixIconClass } from "../ui/panels";
 
 type LocationFieldProps = {
   /** Set by antd Form.Item: the picked place, or undefined while the text is not a picked suggestion. */
@@ -14,6 +15,8 @@ type LocationFieldProps = {
   id?: string;
   "aria-invalid"?: boolean;
 };
+
+const emptyClass = "inline-flex items-center gap-2 px-1 py-1.5 text-sm text-ink-muted";
 
 const MIN_CHARS = 3;
 const DEBOUNCE_MS = 280;
@@ -83,11 +86,11 @@ export function LocationField({ value, onChange, onBlur, placeholder, id, ...res
 
   const notFound =
     status === "loading" ? (
-      <span className="ow-loc-empty"><Spin size="small" /> Searching</span>
+      <span className={emptyClass}><Spin size="small" /> Searching</span>
     ) : status === "error" ? (
-      <span className="ow-loc-empty">Address search is unavailable. Try again in a moment.</span>
+      <span className={emptyClass}>Address search is unavailable. Try again in a moment.</span>
     ) : text.trim().length >= MIN_CHARS ? (
-      <span className="ow-loc-empty">No matches. Try a street, hotel, airport code or city.</span>
+      <span className={emptyClass}>No matches. Try a street, hotel, airport code or city.</span>
     ) : null;
 
   return (
@@ -98,7 +101,7 @@ export function LocationField({ value, onChange, onBlur, placeholder, id, ...res
       onSelect={onPick}
       onBlur={onBlur}
       showSearch={{ filterOption: false }}
-      prefix={<Icon name={value?.kind === "airport" ? "plane" : "map-pin"} className="ow-prefix" />}
+      prefix={<Icon name={value?.kind === "airport" ? "plane" : "map-pin"} className={prefixIconClass} />}
       placeholder={placeholder}
       notFoundContent={notFound}
       popupMatchSelectWidth
@@ -111,11 +114,15 @@ export function LocationField({ value, onChange, onBlur, placeholder, id, ...res
       optionRender={(option) => {
         const o = (option.data as { place: Place }).place;
         return (
-          <span className="ow-loc-option">
-            <Icon name={o.kind === "airport" ? "plane" : o.kind === "address" ? "map-pin" : "building"} />
+          <span className="flex items-start gap-3 py-1 whitespace-normal">
+            <Icon
+              name={o.kind === "airport" ? "plane" : o.kind === "address" ? "map-pin" : "building"}
+              size={18}
+              className="mt-0.5 text-bronze"
+            />
             <span>
-              <span className="ow-loc-name">{o.name}</span>
-              {o.detail && <span className="ow-loc-detail">{o.detail}</span>}
+              <span className="block text-[15px] leading-5 font-semibold text-ink">{o.name}</span>
+              {o.detail && <span className="block text-[13px] leading-[18px] text-ink-muted">{o.detail}</span>}
             </span>
           </span>
         );

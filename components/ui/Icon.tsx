@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactElement } from "react";
+import { cn } from "@/lib/cn";
 
 // Line icons on a 24px grid, 1.5px round stroke. For anything missing use Lucide at stroke-width 1.5.
 const ICONS = {
@@ -36,8 +37,13 @@ type IconProps = { name: IconName; size?: number; label?: string; className?: st
 export function Icon({ name, size, label, className, style }: IconProps) {
   return (
     <svg
-      className={className ? `ow-icon ${className}` : "ow-icon"}
+      className={cn("size-5 flex-none", className)}
       viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden={label ? undefined : true}
       role={label ? "img" : undefined}
       aria-label={label}

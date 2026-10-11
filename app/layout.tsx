@@ -110,6 +110,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <head>
+        {/* Cascade order, declared before any stylesheet: antd sits above Tailwind's reset (base) and
+            below its utilities, so a class on an antd element wins. Unlayered CSS (globals.css antd
+            overrides) beats all of them. */}
+        <style>{"@layer theme, base, antd, components, utilities;"}</style>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
@@ -117,7 +121,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c") }}
         />
-        <a href="#main" className="ow-skip">
+        <a
+          href="#main"
+          className="absolute -top-25 left-4 z-100 rounded-full bg-charcoal px-4 py-2 font-semibold text-on-charcoal focus:top-4"
+        >
           Skip to content
         </a>
         <AntdProvider>

@@ -6,6 +6,7 @@ import fleetSedan from "@/public/images/fleet-sedan.jpg"; // 1764090317825-9b76e
 import fleetSuv from "@/public/images/fleet-suv.jpg"; // 1735620731955-b047a7122892
 import fleetVan from "@/public/images/fleet-van.jpg"; // 1765461734605-34657fa04db2
 import hero from "@/public/images/hero.jpg"; // 1730800328198-f9efbf9db53f
+import heroWide from "@/public/images/hero-image.webp";
 import serviceAirport from "@/public/images/service-airport.jpg"; // 1687992176093-6417a93fa3d0
 import serviceCorporate from "@/public/images/service-corporate.jpg"; // 1698840059740-ba83e510733b
 import serviceHourly from "@/public/images/service-hourly.jpg"; // 1596032457104-baa1f5f9372a
@@ -16,6 +17,7 @@ export type SiteImage = { src: StaticImageData; alt: string };
 
 export const images = {
   hero: { src: hero, alt: "A chauffeur in a dark suit opening the rear door of a black van outside a hotel entrance" },
+  heroWide: { src: heroWide, alt: "A black sedan, SUV and Sprinter van lined up on a waterfront at sunset, with the St. Louis Gateway Arch and skyline behind" },
   cabin: { src: cabin, alt: "Cream leather rear cabin of a luxury car with a centre console and glassware" },
   services: {
     airport: { src: serviceAirport, alt: "Two travellers walking through a bright airport terminal towards the gates" },

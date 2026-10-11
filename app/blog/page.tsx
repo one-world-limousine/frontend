@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { Footer } from "@/components/layout/Footer";
 import { NavBar } from "@/components/layout/NavBar";
-import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
+import { CtaBand } from "@/components/ui/CtaBand";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { posts } from "@/lib/blog";
 import { site, telHref } from "@/lib/site";
@@ -39,8 +40,8 @@ export default function BlogPage() {
         }}
       />
       <NavBar />
-      <main id="main" className="bl-page">
-        <div className="ow-wrap">
+      <main id="main" className="pt-16">
+        <div className="wrap">
           <SectionHeading
             as="h1"
             eyebrow="Our blog"
@@ -48,11 +49,11 @@ export default function BlogPage() {
             lead="Tips for smoother airport runs, business travel and the occasions that call for a chauffeur, from the team behind every One World ride."
           />
 
-          <div className="bl-featured">
+          <div className="mt-12">
             <BlogCard post={featured} featured />
           </div>
 
-          <RevealGroup className="hp-grid3 bl-grid">
+          <RevealGroup className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {rest.map((p) => (
               <RevealItem key={p.slug}>
                 <BlogCard post={p} />
@@ -61,24 +62,19 @@ export default function BlogPage() {
           </RevealGroup>
         </div>
 
-        <section className="ow-wrap hp-cta-wrap bl-cta" aria-labelledby="bl-cta-title">
-          <Reveal>
-            <div className="hp-cta" data-theme="dark">
-              <div>
-                <h2 id="bl-cta-title">Ready when you are.</h2>
-                <p>Book online in a few minutes, or call and we will plan the ride with you.</p>
-              </div>
-              <div className="ow-row">
-                <Button href="/book" size="lg">
-                  Book your ride
-                </Button>
-                <Button href={telHref} size="lg" variant="secondary" iconLeft="phone" icon={null}>
-                  Call us
-                </Button>
-              </div>
-            </div>
-          </Reveal>
-        </section>
+        <CtaBand
+          id="bl-cta-title"
+          className="pt-(--section-y)"
+          title="Ready when you are."
+          text="Book online in a few minutes, or call and we will plan the ride with you."
+        >
+          <Button href="/book" size="lg">
+            Book your ride
+          </Button>
+          <Button href={telHref} size="lg" variant="secondary" iconLeft="phone" icon={null}>
+            Call us
+          </Button>
+        </CtaBand>
       </main>
       <Footer />
     </>

@@ -66,9 +66,14 @@ export function ThemeToggle() {
   };
 
   return (
-    <button type="button" className="ow-theme-toggle" onClick={toggle} aria-label="Switch between light and dark theme">
-      <Icon name="moon" className="ow-theme-moon" />
-      <Icon name="sun" className="ow-theme-sun" />
+    <button
+      type="button"
+      className="inline-flex size-11 flex-none cursor-pointer items-center justify-center rounded-full border border-line bg-transparent text-ink transition-colors duration-180 hover:border-line-strong hover:text-bronze-strong"
+      onClick={toggle}
+      aria-label="Switch between light and dark theme"
+    >
+      <Icon name="moon" className="site-dark:hidden" />
+      <Icon name="sun" className="hidden site-dark:block" />
     </button>
   );
 }

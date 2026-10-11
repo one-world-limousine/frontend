@@ -5,7 +5,17 @@ import { Footer } from "@/components/layout/Footer";
 import { NavBar } from "@/components/layout/NavBar";
 import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
+import { CtaBand } from "@/components/ui/CtaBand";
 import { Icon } from "@/components/ui/Icon";
+import {
+  asideClass,
+  contactLinkClass,
+  formGridClass,
+  formPageClass,
+  iconListClass,
+  sidePanelClass,
+  sideTitleClass,
+} from "@/components/ui/panels";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { addressLine, phones, site } from "@/lib/site";
 
@@ -57,8 +67,8 @@ export default function ContactPage() {
         }}
       />
       <NavBar />
-      <main id="main" className="bk-page">
-        <div className="ow-wrap">
+      <main id="main" className={formPageClass}>
+        <div className="wrap">
           <SectionHeading
             as="h1"
             eyebrow="Contact us"
@@ -66,21 +76,21 @@ export default function ContactPage() {
             lead={`Questions, quotes or a ride later this week: send us a note and we reply within ${site.replyTime}. Riding today? Call ${lastMinute.number} and we will attend to you promptly.`}
           />
 
-          <div className="bk-grid">
+          <div className={formGridClass}>
             <ContactForm />
 
             <aside
-              className="bk-aside ct-aside"
+              className={asideClass}
               aria-label="Other ways to reach us"
             >
-              <div className="bk-card">
-                <h2>Call us</h2>
-                <ul className="bk-list">
+              <div className={sidePanelClass}>
+                <h2 className={sideTitleClass}>Call us</h2>
+                <ul className={iconListClass}>
                   {phones.map((p) => (
                     <li key={p.number}>
                       <Icon name="phone" />
                       <span>
-                        <a className="ct-link" href={p.href}>
+                        <a className={contactLinkClass} href={p.href}>
                           {p.number}
                         </a>
                         <small>{p.label}</small>
@@ -89,13 +99,13 @@ export default function ContactPage() {
                   ))}
                 </ul>
               </div>
-              <div className="bk-card">
-                <h2>Write to us</h2>
-                <ul className="bk-list">
+              <div className={sidePanelClass}>
+                <h2 className={sideTitleClass}>Write to us</h2>
+                <ul className={iconListClass}>
                   <li>
                     <Icon name="mail" />
                     <span>
-                      <a className="ct-link" href={`mailto:${site.email}`}>
+                      <a className={contactLinkClass} href={`mailto:${site.email}`}>
                         {site.email}
                       </a>
                       <small>Replies within {site.replyTime}</small>
@@ -104,7 +114,7 @@ export default function ContactPage() {
                   <li>
                     <Icon name="phone" />
                     <span>
-                      <a className="ct-link" href={sms}>
+                      <a className={contactLinkClass} href={sms}>
                         Send a text message
                       </a>
                       <small>{site.smsPhone}</small>
@@ -118,22 +128,23 @@ export default function ContactPage() {
 
         {/* Office + map */}
         {/*<section
-          className="ow-wrap ct-office"
+          className="wrap pt-(--section-y)"
           aria-labelledby="ct-office-title"
         >
-          <Reveal className="ct-office-grid">
-            <div className="ct-office-copy">
+          <Reveal className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+            <div className="flex flex-col gap-6">
               <SectionHeading
                 id="ct-office-title"
                 eyebrow="Our base"
                 title="St. Charles, Missouri"
                 size="md"
+                titleClassName="text-lg leading-7 text-ink-muted"
               />
-              <address className="ct-address">
-                <Icon name="map-pin" />
+              <address className="flex items-start gap-3 text-lg leading-7 font-semibold text-ink-muted not-italic">
+                <Icon name="map-pin" size={22} className="mt-[3px] text-bronze" />
                 <span>{addressLine}</span>
               </address>
-              <p className="ow-sh-lead">
+              <p className="max-w-[60ch] text-lg leading-7 text-ink-muted">
                 Chauffeured rides across Greater St. Louis, to and from STL and
                 the airports beyond it, and onward to cities around the world.
               </p>
@@ -148,7 +159,7 @@ export default function ContactPage() {
         </section>*/}
 
         {/* FAQ */}
-        <section className="ow-wrap ct-faq" aria-labelledby="ct-faq-title">
+        <section className="wrap py-(--section-y)" aria-labelledby="ct-faq-title">
           <Reveal>
             <SectionHeading
               id="ct-faq-title"
@@ -157,49 +168,35 @@ export default function ContactPage() {
               size="md"
             />
           </Reveal>
-          <Reveal className="ct-faq-list">
+          <Reveal className="mt-8 max-w-215 border-t border-line">
             {faqs.map((f) => (
-              <details key={f.q} className="ct-faq-item">
-                <summary>
+              <details key={f.q} className="group/faq border-b border-line">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-6 text-lg leading-[26px] font-semibold text-ink hover:text-bronze-strong [&::-webkit-details-marker]:hidden">
                   <span>{f.q}</span>
-                  <Icon name="plus" />
+                  <Icon
+                    name="plus"
+                    className="text-bronze transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] group-open/faq:rotate-45"
+                  />
                 </summary>
-                <p>{f.a}</p>
+                <p className="mb-6 max-w-[70ch] text-base leading-[26px] text-ink-muted">{f.a}</p>
               </details>
             ))}
           </Reveal>
         </section>
 
         {/* Riding today */}
-        <section
-          className="ow-wrap hp-cta-wrap"
-          aria-labelledby="ct-today-title"
+        <CtaBand
+          id="ct-today-title"
+          title="Riding today?"
+          text="For same-day bookings and last-minute changes, call us directly."
         >
-          <Reveal>
-            <div className="hp-cta" data-theme="dark">
-              <div>
-                <h2 id="ct-today-title">Riding today?</h2>
-                <p>
-                  For same-day bookings and last-minute changes, call us
-                  directly.
-                </p>
-              </div>
-              <div className="ow-row">
-                <Button
-                  href={lastMinute.href}
-                  size="lg"
-                  iconLeft="phone"
-                  icon={null}
-                >
-                  {lastMinute.number}
-                </Button>
-                <Button href="/book" size="lg" variant="secondary">
-                  Book online
-                </Button>
-              </div>
-            </div>
-          </Reveal>
-        </section>
+          <Button href={lastMinute.href} size="lg" iconLeft="phone" icon={null}>
+            {lastMinute.number}
+          </Button>
+          <Button href="/book" size="lg" variant="secondary">
+            Book online
+          </Button>
+        </CtaBand>
       </main>
       <Footer />
     </>

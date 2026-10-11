@@ -72,7 +72,9 @@ const theme: ThemeConfig = {
 
 export function AntdProvider({ children }: { children: ReactNode }) {
   return (
-    <AntdRegistry>
+    // layer: antd's CSS goes in @layer antd (ordered in app/layout.tsx), so its global resets such as
+    // `a { color }` sit below Tailwind utilities instead of overriding them.
+    <AntdRegistry layer>
       <ConfigProvider theme={theme} wave={{ disabled: true }}>
         {children}
       </ConfigProvider>

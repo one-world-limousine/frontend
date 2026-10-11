@@ -13,15 +13,15 @@ export default function NotFound() {
   return (
     <>
       <NavBar />
-      <main id="main" className="nf">
-        <div className="ow-wrap">
+      <main id="main" className="pt-32 pb-(--section-y)">
+        <div className="wrap">
           <SectionHeading
             as="h1"
             eyebrow="Error 404"
             title="This page has taken a different route."
             lead="The address may have changed. Your chauffeur, however, is still ready."
           >
-            <div className="ow-row" style={{ marginTop: 16 }}>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
               <Button href="/book" size="lg">
                 Book your ride
               </Button>

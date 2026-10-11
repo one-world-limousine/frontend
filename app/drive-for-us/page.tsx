@@ -3,6 +3,16 @@ import { DriverForm } from "@/components/careers/DriverForm";
 import { Footer } from "@/components/layout/Footer";
 import { NavBar } from "@/components/layout/NavBar";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import {
+  asideClass,
+  contactLinkClass,
+  darkSidePanelClass,
+  formGridClass,
+  formPageClass,
+  iconListClass,
+  sidePanelClass,
+  sideTitleClass,
+} from "@/components/ui/panels";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { driverRequirements } from "@/lib/careers";
 import { phones, site } from "@/lib/site";
@@ -25,8 +35,8 @@ export default function DriveForUsPage() {
   return (
     <>
       <NavBar />
-      <main id="main" className="bk-page">
-        <div className="ow-wrap">
+      <main id="main" className={formPageClass}>
+        <div className="wrap">
           <SectionHeading
             as="h1"
             eyebrow="Drive for us"
@@ -34,23 +44,23 @@ export default function DriveForUsPage() {
             lead="We are growing our professional on-call team in St. Louis. If you drive your own black car and hold the right licenses, we would like to hear from you."
           />
 
-          <ul className="dr-perks">
+          <ul className="mt-12 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
             {perks.map((p) => (
-              <li key={p.title} className="hp-point">
-                <Icon name={p.icon} />
-                <h2>{p.title}</h2>
-                <p>{p.text}</p>
+              <li key={p.title}>
+                <Icon name={p.icon} size={28} className="text-bronze" />
+                <h2 className="mt-3 mb-1 text-lg leading-[26px] font-semibold text-ink">{p.title}</h2>
+                <p className="text-[15px] leading-6 text-ink-muted">{p.text}</p>
               </li>
             ))}
           </ul>
 
-          <div className="bk-grid">
+          <div className={formGridClass}>
             <DriverForm />
 
-            <aside className="bk-aside" aria-label="Before you apply">
-              <div className="bk-card">
-                <h2>What you need</h2>
-                <ul className="bk-list">
+            <aside className={asideClass} aria-label="Before you apply">
+              <div className={sidePanelClass}>
+                <h2 className={sideTitleClass}>What you need</h2>
+                <ul className={iconListClass}>
                   {driverRequirements.map((r) => (
                     <li key={r}>
                       <Icon name="check" />
@@ -59,14 +69,14 @@ export default function DriveForUsPage() {
                   ))}
                 </ul>
               </div>
-              <div className="bk-card bk-card-dark" data-theme="dark">
-                <h2>Questions?</h2>
-                <ul className="bk-list">
+              <div className={darkSidePanelClass} data-theme="dark">
+                <h2 className={sideTitleClass}>Questions?</h2>
+                <ul className={iconListClass}>
                   {phones.map((p) => (
                     <li key={p.number}>
                       <Icon name="phone" />
                       <span>
-                        <a className="ct-link" href={p.href}>
+                        <a className={contactLinkClass} href={p.href}>
                           {p.number}
                         </a>
                         <small>{p.label}</small>
@@ -76,7 +86,7 @@ export default function DriveForUsPage() {
                   <li>
                     <Icon name="mail" />
                     <span>
-                      <a className="ct-link" href={`mailto:${site.email}`}>
+                      <a className={contactLinkClass} href={`mailto:${site.email}`}>
                         {site.email}
                       </a>
                       <small>Replies within {site.replyTime}</small>

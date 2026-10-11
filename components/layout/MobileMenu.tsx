@@ -7,7 +7,13 @@ import { useEffect, useState } from "react";
 import { navLinks, site, telHref } from "@/lib/site";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
+import { phoneLinkClass } from "./navStyles";
 import { useActiveNav } from "./useActiveNav";
+
+// The selected page is marked with a short bronze rule before its name.
+const drawerLinkClass =
+  "block border-b border-line py-4 text-lg leading-[26px] font-medium text-ink no-underline " +
+  "aria-[current]:font-semibold aria-[current]:text-bronze-strong aria-[current]:before:mr-3 aria-[current]:before:inline-block aria-[current]:before:h-0.5 aria-[current]:before:w-4 aria-[current]:before:rounded-[2px] aria-[current]:before:bg-bronze aria-[current]:before:align-middle";
 
 export function MobileMenu() {
   const pathname = usePathname();
@@ -19,7 +25,7 @@ export function MobileMenu() {
   const [top, setTop] = useState<number>();
   const setOpen = (next: boolean | ((v: boolean) => boolean)) => {
     const willOpen = typeof next === "function" ? next(open) : next;
-    if (willOpen) setTop(document.querySelector(".ow-nav")?.getBoundingClientRect().bottom);
+    if (willOpen) setTop(document.querySelector("[data-site-header]")?.getBoundingClientRect().bottom);
     setOpenOn(willOpen ? pathname : null);
   };
 
@@ -35,7 +41,7 @@ export function MobileMenu() {
     <>
       <button
         type="button"
-        className="ow-nav-toggle"
+        className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full border border-line-strong bg-transparent text-ink lg:hidden"
         aria-expanded={open}
         aria-controls="ow-mobile-menu"
         aria-label={open ? "Close menu" : "Open menu"}
@@ -48,7 +54,7 @@ export function MobileMenu() {
           <>
             <m.div
               key="scrim"
-              className="ow-scrim"
+              className="fixed inset-x-0 top-(--nav-height) bottom-0 z-48 bg-[rgba(19,20,23,0.5)]"
               style={{ top }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -60,7 +66,7 @@ export function MobileMenu() {
               key="drawer"
               id="ow-mobile-menu"
               aria-label="Mobile"
-              className="ow-drawer"
+              className="fixed inset-x-0 top-(--nav-height) z-49 border-b border-line bg-charcoal-deep px-(--gutter) pt-4 pb-8 shadow-float"
               style={{ top }}
               initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -72,6 +78,7 @@ export function MobileMenu() {
                   <li key={l.label}>
                     <Link
                       href={l.href}
+                      className={drawerLinkClass}
                       aria-current={l.label === active ? (onHome && l.label !== "Home" ? "location" : "page") : undefined}
                       onClick={() => {
                         select(l.label);
@@ -83,8 +90,8 @@ export function MobileMenu() {
                   </li>
                 ))}
               </ul>
-              <a className="ow-nav-phone" href={telHref}>
-                <Icon name="phone" />
+              <a className={`${phoneLinkClass} my-6`} href={telHref}>
+                <Icon name="phone" className="text-bronze" />
                 {site.phone}
               </a>
               <Button href="/book" size="lg" block>

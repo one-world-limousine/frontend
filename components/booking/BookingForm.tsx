@@ -10,7 +10,23 @@ import type { Place } from "@/lib/places";
 import { estimateFare } from "@/lib/pricing";
 import { phones, site } from "@/lib/site";
 import { Button } from "../ui/Button";
+import { cn } from "@/lib/cn";
 import { Icon } from "../ui/Icon";
+import {
+  fieldLabelClass,
+  fieldsClass,
+  formErrorClass,
+  formSectionClass,
+  formSectionTitleClass,
+  legalClass,
+  panelClass,
+  prefixIconClass,
+  spanClass,
+  successClass,
+  successMarkClass,
+  successTextClass,
+  successTitleClass,
+} from "../ui/panels";
 import { LocationField, pickedPlaceRule } from "./LocationField";
 import { ModeTabs } from "./ModeTabs";
 import { TripEstimate } from "./TripEstimate";
@@ -34,8 +50,8 @@ type Values = {
 };
 
 const MAX_STOPS = 3;
-const label = (text: string) => <span className="ow-field-label">{text}</span>;
-const prefix = (name: Parameters<typeof Icon>[0]["name"]) => <Icon name={name} className="ow-prefix" />;
+const label = (text: string) => <span className={fieldLabelClass}>{text}</span>;
+const prefix = (name: Parameters<typeof Icon>[0]["name"]) => <Icon name={name} className={prefixIconClass} />;
 const disablePast = (d: Dayjs) => d.isBefore(dayjs().startOf("day"));
 const isMode = (v?: string): v is BookingMode => bookingModes.some((m) => m.id === v);
 const lastMinute = phones[phones.length - 1];
@@ -109,10 +125,10 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
   return (
     <AnimatePresence mode="wait" initial={false}>
       {reference ? (
-        <m.div key="done" className="bk-card bk-success" role="status" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-          <span className="bk-success-mark"><Icon name="check" /></span>
-          <h2>Your request is in.</h2>
-          <p>
+        <m.div key="done" className={cn(panelClass, successClass)} role="status" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+          <span className={successMarkClass}><Icon name="check" size={28} /></span>
+          <h2 className={successTitleClass}>Your request is in.</h2>
+          <p className={successTextClass}>
             Reference <strong>{reference}</strong>. A reservations agent will confirm your chauffeur and fare by email within 24 hours. For a
             ride at short notice, call <a href={lastMinute.href}>{lastMinute.number}</a>.
           </p>
@@ -127,7 +143,7 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
           </Button>
         </m.div>
       ) : (
-        <m.div key="form" className="bk-card" exit={{ opacity: 0, y: -12 }}>
+        <m.div key="form" className={panelClass} exit={{ opacity: 0, y: -12 }}>
           <Form
             form={form}
             className="ow-form"
@@ -138,12 +154,12 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
             scrollToFirstError={{ behavior: "smooth", block: "center" }}
             aria-label="Reservation request"
           >
-            <section className="bk-section" aria-labelledby="bk-trip">
-              <h2 className="bk-section-title" id="bk-trip">Your trip</h2>
+            <section className={formSectionClass} aria-labelledby="bk-trip">
+              <h2 className={formSectionTitleClass} id="bk-trip">Your trip</h2>
               <ModeTabs value={mode} onChange={setMode} />
-              <div className="bk-fields">
+              <div className={fieldsClass}>
                 <Form.Item
-                  className="bk-span"
+                  className={spanClass}
                   name="pickup"
                   label={label("Pick-up")}
                   validateTrigger={["onChange", "onBlur"]}
@@ -157,7 +173,7 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                     {(fields, { add, remove }) => (
                       <>
                         {fields.map((field, i) => (
-                          <div className="bk-span bk-stop" key={field.key}>
+                          <div className={cn(spanClass, "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2")} key={field.key}>
                             <Form.Item
                               name={field.name}
                               label={label(`Stop ${i + 1}`)}
@@ -166,15 +182,15 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                             >
                               <LocationField placeholder="Address, hotel or venue" />
                             </Form.Item>
-                            <button type="button" className="bk-stop-remove" onClick={() => remove(field.name)} aria-label={`Remove stop ${i + 1}`}>
+                            <button type="button" className="mt-[22px] inline-flex size-(--control-height) cursor-pointer items-center justify-center rounded-md border border-line-strong bg-transparent text-ink-muted transition-colors duration-180 hover:border-danger hover:text-danger" onClick={() => remove(field.name)} aria-label={`Remove stop ${i + 1}`}>
                               <Icon name="close" />
                             </button>
                           </div>
                         ))}
                         {fields.length < MAX_STOPS && (
-                          <div className="bk-span">
-                            <button type="button" className="bk-add-stop" onClick={() => add()}>
-                              <Icon name="plus" />
+                          <div className={spanClass}>
+                            <button type="button" className="mb-6 inline-flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-[15px] font-semibold text-bronze-strong hover:text-ink" onClick={() => add()}>
+                              <Icon name="plus" size={18} />
                               {fields.length ? "Add another stop" : "Add a stop"}
                             </button>
                           </div>
@@ -186,7 +202,7 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
 
                 {routed && (
                   <Form.Item
-                    className="bk-span"
+                    className={spanClass}
                     name="dropoff"
                     label={label("Drop-off")}
                     validateTrigger={["onChange", "onBlur"]}
@@ -196,12 +212,12 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                   </Form.Item>
                 )}
                 {mode === "airport" && (
-                  <Form.Item className="bk-span" name="flight" label={label("Flight number")} extra="We track it and adjust for delays.">
+                  <Form.Item className={spanClass} name="flight" label={label("Flight number")} extra="We track it and adjust for delays.">
                     <Input prefix={prefix("plane")} placeholder="AA100" />
                   </Form.Item>
                 )}
                 {mode === "hourly" && (
-                  <Form.Item className="bk-span" name="duration" label={label("Duration")}>
+                  <Form.Item className={spanClass} name="duration" label={label("Duration")}>
                     <Select prefix={prefix("clock")} options={durations.map((d) => ({ value: d, label: d }))} />
                   </Form.Item>
                 )}
@@ -215,10 +231,10 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
               </div>
             </section>
 
-            <section className="bk-section" aria-labelledby="bk-vehicle">
-              <h2 className="bk-section-title" id="bk-vehicle">Vehicle and passengers</h2>
-              <div className="bk-fields">
-                <Form.Item className="bk-span" name="vehicle" label={label("Vehicle")}>
+            <section className={formSectionClass} aria-labelledby="bk-vehicle">
+              <h2 className={formSectionTitleClass} id="bk-vehicle">Vehicle and passengers</h2>
+              <div className={fieldsClass}>
+                <Form.Item className={spanClass} name="vehicle" label={label("Vehicle")}>
                   <Select
                     prefix={prefix("car")}
                     options={fleet.map((f) => ({ value: f.id, label: `${f.name} · ${f.vehicleClass} · up to ${f.passengers}` }))}
@@ -249,10 +265,10 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
               {routed && <TripEstimate route={route} fareClass={vehicle?.fareClass} time={timeText} />}
             </section>
 
-            <section className="bk-section" aria-labelledby="bk-contact">
-              <h2 className="bk-section-title" id="bk-contact">Your details</h2>
-              <div className="bk-fields">
-                <Form.Item className="bk-span" name="name" label={label("Full name")} rules={[{ required: true, whitespace: true, message: "Add the lead passenger's name" }]}>
+            <section className={formSectionClass} aria-labelledby="bk-contact">
+              <h2 className={formSectionTitleClass} id="bk-contact">Your details</h2>
+              <div className={fieldsClass}>
+                <Form.Item className={spanClass} name="name" label={label("Full name")} rules={[{ required: true, whitespace: true, message: "Add the lead passenger's name" }]}>
                   <Input prefix={prefix("user")} placeholder="Jane Carter" autoComplete="name" />
                 </Form.Item>
                 <Form.Item
@@ -275,13 +291,13 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                 >
                   <Input prefix={prefix("phone")} placeholder="+1 (212) 555-0147" type="tel" autoComplete="tel" inputMode="tel" />
                 </Form.Item>
-                <Form.Item className="bk-span" name="notes" label={label("Notes for your chauffeur")}>
+                <Form.Item className={spanClass} name="notes" label={label("Notes for your chauffeur")}>
                   <Input.TextArea rows={4} placeholder="A stop on the way, extra luggage, anything we should know" maxLength={500} showCount />
                 </Form.Item>
               </div>
 
               {status === "error" && (
-                <p className="ow-field-msg" role="alert" style={{ color: "var(--danger)", display: "flex", gap: 8, alignItems: "center", margin: "0 0 16px" }}>
+                <p className={formErrorClass} role="alert">
                   <Icon name="alert" /> We could not send your request. Try again, or call {site.phone}.
                 </p>
               )}
@@ -289,7 +305,7 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
               <Button type="submit" size="lg" icon="arrow-right" disabled={status === "sending"}>
                 {status === "sending" ? "Sending request" : "Request booking"}
               </Button>
-              <p className="bk-legal">No payment is taken now. The estimate is a guide; we confirm the final fare by email before your ride.</p>
+              <p className={legalClass}>No payment is taken now. The estimate is a guide; we confirm the final fare by email before your ride.</p>
             </section>
           </Form>
         </m.div>
