@@ -5,7 +5,13 @@ import dayjs, { type Dayjs } from "dayjs";
 import { AnimatePresence, m } from "framer-motion";
 import { useState } from "react";
 import { submitBooking, type Trip } from "@/lib/booking";
-import { bookingModes, durations, fleet, type BookingMode } from "@/lib/content";
+import {
+  bookingModes,
+  durations,
+  fleet,
+  type BookingMode,
+} from "@/lib/content";
+import { openSquareCheckout, type PaymentRequest } from "@/lib/payments";
 import type { Place } from "@/lib/places";
 import { estimateFare } from "@/lib/pricing";
 import { phones, site } from "@/lib/site";
@@ -51,9 +57,12 @@ type Values = {
 
 const MAX_STOPS = 3;
 const label = (text: string) => <span className={fieldLabelClass}>{text}</span>;
-const prefix = (name: Parameters<typeof Icon>[0]["name"]) => <Icon name={name} className={prefixIconClass} />;
+const prefix = (name: Parameters<typeof Icon>[0]["name"]) => (
+  <Icon name={name} className={prefixIconClass} />
+);
 const disablePast = (d: Dayjs) => d.isBefore(dayjs().startOf("day"));
-const isMode = (v?: string): v is BookingMode => bookingModes.some((m) => m.id === v);
+const isMode = (v?: string): v is BookingMode =>
+  bookingModes.some((m) => m.id === v);
 const lastMinute = phones[phones.length - 1];
 
 function initialValues(trip: Trip): Partial<Values> {
@@ -63,20 +72,35 @@ function initialValues(trip: Trip): Partial<Values> {
     pickup: trip.pickup,
     dropoff: trip.dropoff,
     stops: [],
-    duration: trip.duration && durations.includes(trip.duration) ? trip.duration : durations[0],
+    duration:
+      trip.duration && durations.includes(trip.duration)
+        ? trip.duration
+        : durations[0],
     date: date?.isValid() ? date : undefined,
     time: time.isValid() ? time : undefined,
-    vehicle: fleet.some((f) => f.id === trip.vehicle) ? trip.vehicle : fleet[0].id,
+    vehicle: fleet.some((f) => f.id === trip.vehicle)
+      ? trip.vehicle
+      : fleet[0].id,
     passengers: 1,
     luggage: 1,
   };
 }
 
 export function BookingForm({ trip = {} }: { trip?: Trip }) {
-  const [mode, setMode] = useState<BookingMode>(isMode(trip.mode) ? trip.mode : "transfer");
+  const [mode, setMode] = useState<BookingMode>(
+    isMode(trip.mode) ? trip.mode : "transfer",
+  );
   const [form] = Form.useForm<Values>();
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const [reference, setReference] = useState<string | null>(null);
+  // Set after a priced request is sent, so the success screen can offer to pay with Square.
+  const [checkout, setCheckout] = useState<{
+    request: PaymentRequest;
+    amount: number;
+  } | null>(null);
+  const [payStatus, setPayStatus] = useState<"idle" | "opening" | "error">(
+    "idle",
+  );
 
   // Live route + fare, recalculated as the trip changes.
   const routed = mode !== "hourly";
@@ -91,12 +115,18 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
 
   const onFinish = async (v: Values) => {
     setStatus("sending");
-    const fare = route.status === "ready" && vehicle ? estimateFare(vehicle.fareClass, route.miles, v.time.format("HH:mm")) : null;
+    const fare =
+      route.status === "ready" && vehicle
+        ? estimateFare(vehicle.fareClass, route.miles, v.time.format("HH:mm"))
+        : null;
+    const tripStops = routed
+      ? (v.stops ?? []).filter((s): s is Place => !!s)
+      : [];
     try {
       const res = await submitBooking({
         mode,
         pickup: v.pickup!,
-        stops: routed ? (v.stops ?? []).filter((s): s is Place => !!s) : [],
+        stops: tripStops,
         dropoff: routed ? v.dropoff : undefined,
         flight: mode === "airport" ? v.flight : undefined,
         duration: mode === "hourly" ? v.duration : undefined,
@@ -111,10 +141,31 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
         notes: v.notes,
         estimate:
           route.status === "ready" && fare
-            ? { miles: route.miles, minutes: route.minutes, fare: fare.kind === "price" ? fare.amount : "call" }
+            ? {
+                miles: route.miles,
+                minutes: route.minutes,
+                fare: fare.kind === "price" ? fare.amount : "call",
+              }
             : undefined,
       });
       setReference(res.reference);
+      setPayStatus("idle");
+      setCheckout(
+        routed && fare?.kind === "price"
+          ? {
+              request: {
+                reference: res.reference,
+                vehicle: v.vehicle,
+                time: v.time.format("HH:mm"),
+                points: [v.pickup!, ...tripStops, v.dropoff!].map(
+                  ({ label, lat, lon }) => ({ label, lat, lon }),
+                ),
+                email: v.email,
+              },
+              amount: fare.amount,
+            }
+          : null,
+      );
       setStatus("idle");
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
@@ -122,21 +173,67 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
     }
   };
 
+  const pay = async () => {
+    if (!checkout) return;
+    setPayStatus("opening");
+    try {
+      await openSquareCheckout(checkout.request);
+      setPayStatus("idle");
+    } catch {
+      setPayStatus("error");
+    }
+  };
+
   return (
     <AnimatePresence mode="wait" initial={false}>
       {reference ? (
-        <m.div key="done" className={cn(panelClass, successClass)} role="status" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-          <span className={successMarkClass}><Icon name="check" size={28} /></span>
+        <m.div
+          key="done"
+          className={cn(panelClass, successClass)}
+          role="status"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <span className={successMarkClass}>
+            <Icon name="check" size={28} />
+          </span>
           <h2 className={successTitleClass}>Your request is in.</h2>
           <p className={successTextClass}>
-            Reference <strong>{reference}</strong>. A reservations agent will confirm your chauffeur and fare by email within 24 hours. For a
-            ride at short notice, call <a href={lastMinute.href}>{lastMinute.number}</a>.
+            Reference <strong>{reference}</strong>. A reservations agent will
+            confirm your chauffeur and fare by email within 24 hours. For a ride
+            at short notice, call{" "}
+            <a href={lastMinute.href}>{lastMinute.number}</a>.
           </p>
+          {checkout && (
+            <>
+              <Button
+                size="lg"
+                icon="arrow-right"
+                onClick={pay}
+                disabled={payStatus === "opening"}
+              >
+                {payStatus === "opening"
+                  ? "Opening Square checkout"
+                  : `Pay $${checkout.amount} now with Square`}
+              </Button>
+              {payStatus === "error" && (
+                <p className={formErrorClass} role="alert">
+                  <Icon name="alert" /> We could not open the payment page. You
+                  can pay once your agent confirms, or call {site.phone}.
+                </p>
+              )}
+              <p className={legalClass}>
+                Opens Square&apos;s secure checkout in a new tab. Prefer to
+                wait? You can pay after your agent confirms the fare.
+              </p>
+            </>
+          )}
           <Button
             variant="secondary"
             onClick={() => {
               form.resetFields();
               setReference(null);
+              setCheckout(null);
             }}
           >
             Book another ride
@@ -155,7 +252,9 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
             aria-label="Reservation request"
           >
             <section className={formSectionClass} aria-labelledby="bk-trip">
-              <h2 className={formSectionTitleClass} id="bk-trip">Your trip</h2>
+              <h2 className={formSectionTitleClass} id="bk-trip">
+                Your trip
+              </h2>
               <ModeTabs value={mode} onChange={setMode} />
               <div className={fieldsClass}>
                 <Form.Item
@@ -163,9 +262,19 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                   name="pickup"
                   label={label("Pick-up")}
                   validateTrigger={["onChange", "onBlur"]}
-                  rules={[pickedPlaceRule("Choose a pick-up address from the suggestions")]}
+                  rules={[
+                    pickedPlaceRule(
+                      "Choose a pick-up address from the suggestions",
+                    ),
+                  ]}
                 >
-                  <LocationField placeholder={mode === "airport" ? "Airport (STL, JFK), address or hotel" : "Address, hotel or airport"} />
+                  <LocationField
+                    placeholder={
+                      mode === "airport"
+                        ? "Airport (STL, JFK), address or hotel"
+                        : "Address, hotel or airport"
+                    }
+                  />
                 </Form.Item>
 
                 {routed && (
@@ -173,25 +282,46 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                     {(fields, { add, remove }) => (
                       <>
                         {fields.map((field, i) => (
-                          <div className={cn(spanClass, "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2")} key={field.key}>
+                          <div
+                            className={cn(
+                              spanClass,
+                              "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2",
+                            )}
+                            key={field.key}
+                          >
                             <Form.Item
                               name={field.name}
                               label={label(`Stop ${i + 1}`)}
                               validateTrigger={["onChange", "onBlur"]}
-                              rules={[pickedPlaceRule("Choose this stop from the suggestions, or remove it")]}
+                              rules={[
+                                pickedPlaceRule(
+                                  "Choose this stop from the suggestions, or remove it",
+                                ),
+                              ]}
                             >
                               <LocationField placeholder="Address, hotel or venue" />
                             </Form.Item>
-                            <button type="button" className="mt-[22px] inline-flex size-(--control-height) cursor-pointer items-center justify-center rounded-md border border-line-strong bg-transparent text-ink-muted transition-colors duration-180 hover:border-danger hover:text-danger" onClick={() => remove(field.name)} aria-label={`Remove stop ${i + 1}`}>
+                            <button
+                              type="button"
+                              className="mt-5.5 inline-flex size-(--control-height) cursor-pointer items-center justify-center rounded-md border border-line-strong bg-transparent text-ink-muted transition-colors duration-180 hover:border-danger hover:text-danger"
+                              onClick={() => remove(field.name)}
+                              aria-label={`Remove stop ${i + 1}`}
+                            >
                               <Icon name="close" />
                             </button>
                           </div>
                         ))}
                         {fields.length < MAX_STOPS && (
                           <div className={spanClass}>
-                            <button type="button" className="mb-6 inline-flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-[15px] font-semibold text-bronze-strong hover:text-ink" onClick={() => add()}>
+                            <button
+                              type="button"
+                              className="mb-6 inline-flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0 text-[15px] font-semibold text-bronze-strong hover:text-ink"
+                              onClick={() => add()}
+                            >
                               <Icon name="plus" size={18} />
-                              {fields.length ? "Add another stop" : "Add a stop"}
+                              {fields.length
+                                ? "Add another stop"
+                                : "Add a stop"}
                             </button>
                           </div>
                         )}
@@ -206,38 +336,92 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                     name="dropoff"
                     label={label("Drop-off")}
                     validateTrigger={["onChange", "onBlur"]}
-                    rules={[pickedPlaceRule("Choose a drop-off address from the suggestions")]}
+                    rules={[
+                      pickedPlaceRule(
+                        "Choose a drop-off address from the suggestions",
+                      ),
+                    ]}
                   >
-                    <LocationField placeholder={mode === "airport" ? "Airport, address or hotel" : "Address, hotel or venue"} />
+                    <LocationField
+                      placeholder={
+                        mode === "airport"
+                          ? "Airport, address or hotel"
+                          : "Address, hotel or venue"
+                      }
+                    />
                   </Form.Item>
                 )}
                 {mode === "airport" && (
-                  <Form.Item className={spanClass} name="flight" label={label("Flight number")} extra="We track it and adjust for delays.">
+                  <Form.Item
+                    className={spanClass}
+                    name="flight"
+                    label={label("Flight number")}
+                    extra="We track it and adjust for delays."
+                  >
                     <Input prefix={prefix("plane")} placeholder="AA100" />
                   </Form.Item>
                 )}
                 {mode === "hourly" && (
-                  <Form.Item className={spanClass} name="duration" label={label("Duration")}>
-                    <Select prefix={prefix("clock")} options={durations.map((d) => ({ value: d, label: d }))} />
+                  <Form.Item
+                    className={spanClass}
+                    name="duration"
+                    label={label("Duration")}
+                  >
+                    <Select
+                      prefix={prefix("clock")}
+                      options={durations.map((d) => ({ value: d, label: d }))}
+                    />
                   </Form.Item>
                 )}
 
-                <Form.Item name="date" label={label("Date")} rules={[{ required: true, message: "Choose a date" }]}>
-                  <DatePicker prefix={prefix("calendar")} suffixIcon={null} format="MMM D, YYYY" placeholder="Select date" disabledDate={disablePast} inputReadOnly />
+                <Form.Item
+                  name="date"
+                  label={label("Date")}
+                  rules={[{ required: true, message: "Choose a date" }]}
+                >
+                  <DatePicker
+                    prefix={prefix("calendar")}
+                    suffixIcon={null}
+                    format="MMM D, YYYY"
+                    placeholder="Select date"
+                    disabledDate={disablePast}
+                    inputReadOnly
+                  />
                 </Form.Item>
-                <Form.Item name="time" label={label("Pick-up time")} rules={[{ required: true, message: "Choose a time" }]}>
-                  <TimePicker prefix={prefix("clock")} suffixIcon={null} format="h:mm A" use12Hours minuteStep={5} needConfirm={false} inputReadOnly />
+                <Form.Item
+                  name="time"
+                  label={label("Pick-up time")}
+                  rules={[{ required: true, message: "Choose a time" }]}
+                >
+                  <TimePicker
+                    prefix={prefix("clock")}
+                    suffixIcon={null}
+                    format="h:mm A"
+                    use12Hours
+                    minuteStep={5}
+                    needConfirm={false}
+                    inputReadOnly
+                  />
                 </Form.Item>
               </div>
             </section>
 
             <section className={formSectionClass} aria-labelledby="bk-vehicle">
-              <h2 className={formSectionTitleClass} id="bk-vehicle">Vehicle and passengers</h2>
+              <h2 className={formSectionTitleClass} id="bk-vehicle">
+                Vehicle and passengers
+              </h2>
               <div className={fieldsClass}>
-                <Form.Item className={spanClass} name="vehicle" label={label("Vehicle")}>
+                <Form.Item
+                  className={spanClass}
+                  name="vehicle"
+                  label={label("Vehicle")}
+                >
                   <Select
                     prefix={prefix("car")}
-                    options={fleet.map((f) => ({ value: f.id, label: `${f.name} · ${f.vehicleClass} · up to ${f.passengers}` }))}
+                    options={fleet.map((f) => ({
+                      value: f.id,
+                      label: `${f.name} · ${f.vehicleClass} · up to ${f.passengers}`,
+                    }))}
                   />
                 </Form.Item>
                 <Form.Item
@@ -248,10 +432,16 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                     { required: true, message: "How many passengers?" },
                     ({ getFieldValue }) => ({
                       validator(_, value?: number) {
-                        const car = fleet.find((f) => f.id === getFieldValue("vehicle"));
+                        const car = fleet.find(
+                          (f) => f.id === getFieldValue("vehicle"),
+                        );
                         return !car || !value || value <= car.passengers
                           ? Promise.resolve()
-                          : Promise.reject(new Error(`The ${car.name} seats up to ${car.passengers}. Choose a larger vehicle.`));
+                          : Promise.reject(
+                              new Error(
+                                `The ${car.name} seats up to ${car.passengers}. Choose a larger vehicle.`,
+                              ),
+                            );
                       },
                     }),
                   ]}
@@ -262,50 +452,112 @@ export function BookingForm({ trip = {} }: { trip?: Trip }) {
                   <InputNumber prefix={prefix("luggage")} min={0} max={20} />
                 </Form.Item>
               </div>
-              {routed && <TripEstimate route={route} fareClass={vehicle?.fareClass} time={timeText} />}
+              {routed && (
+                <TripEstimate
+                  route={route}
+                  fareClass={vehicle?.fareClass}
+                  time={timeText}
+                />
+              )}
             </section>
 
             <section className={formSectionClass} aria-labelledby="bk-contact">
-              <h2 className={formSectionTitleClass} id="bk-contact">Your details</h2>
+              <h2 className={formSectionTitleClass} id="bk-contact">
+                Your details
+              </h2>
               <div className={fieldsClass}>
-                <Form.Item className={spanClass} name="name" label={label("Full name")} rules={[{ required: true, whitespace: true, message: "Add the lead passenger's name" }]}>
-                  <Input prefix={prefix("user")} placeholder="Jane Carter" autoComplete="name" />
+                <Form.Item
+                  className={spanClass}
+                  name="name"
+                  label={label("Full name")}
+                  rules={[
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: "Add the lead passenger's name",
+                    },
+                  ]}
+                >
+                  <Input
+                    prefix={prefix("user")}
+                    placeholder="Jane Carter"
+                    autoComplete="name"
+                  />
                 </Form.Item>
                 <Form.Item
                   name="email"
                   label={label("Email")}
                   rules={[
-                    { required: true, message: "Add an email for the confirmation" },
+                    {
+                      required: true,
+                      message: "Add an email for the confirmation",
+                    },
                     { type: "email", message: "Check the email address" },
                   ]}
                 >
-                  <Input prefix={prefix("mail")} placeholder="jane@company.com" type="email" autoComplete="email" inputMode="email" />
+                  <Input
+                    prefix={prefix("mail")}
+                    placeholder="jane@company.com"
+                    type="email"
+                    autoComplete="email"
+                    inputMode="email"
+                  />
                 </Form.Item>
                 <Form.Item
                   name="phone"
                   label={label("Mobile")}
                   rules={[
-                    { required: true, message: "Add a mobile number for your chauffeur" },
-                    { pattern: /^\+?[0-9 ()-]{7,20}$/, message: "Use digits, spaces and an optional +" },
+                    {
+                      required: true,
+                      message: "Add a mobile number for your chauffeur",
+                    },
+                    {
+                      pattern: /^\+?[0-9 ()-]{7,20}$/,
+                      message: "Use digits, spaces and an optional +",
+                    },
                   ]}
                 >
-                  <Input prefix={prefix("phone")} placeholder="+1 (212) 555-0147" type="tel" autoComplete="tel" inputMode="tel" />
+                  <Input
+                    prefix={prefix("phone")}
+                    placeholder="+1 (212) 555-0147"
+                    type="tel"
+                    autoComplete="tel"
+                    inputMode="tel"
+                  />
                 </Form.Item>
-                <Form.Item className={spanClass} name="notes" label={label("Notes for your chauffeur")}>
-                  <Input.TextArea rows={4} placeholder="A stop on the way, extra luggage, anything we should know" maxLength={500} showCount />
+                <Form.Item
+                  className={spanClass}
+                  name="notes"
+                  label={label("Notes for your chauffeur")}
+                >
+                  <Input.TextArea
+                    rows={4}
+                    placeholder="A stop on the way, extra luggage, anything we should know"
+                    maxLength={500}
+                    showCount
+                  />
                 </Form.Item>
               </div>
 
               {status === "error" && (
                 <p className={formErrorClass} role="alert">
-                  <Icon name="alert" /> We could not send your request. Try again, or call {site.phone}.
+                  <Icon name="alert" /> We could not send your request. Try
+                  again, or call {site.phone}.
                 </p>
               )}
 
-              <Button type="submit" size="lg" icon="arrow-right" disabled={status === "sending"}>
+              <Button
+                type="submit"
+                size="lg"
+                icon="arrow-right"
+                disabled={status === "sending"}
+              >
                 {status === "sending" ? "Sending request" : "Request booking"}
               </Button>
-              <p className={legalClass}>No payment is taken now. The estimate is a guide; we confirm the final fare by email before your ride.</p>
+              <p className={legalClass}>
+                No payment is taken now. The estimate is a guide; we confirm the
+                final fare by email before your ride.
+              </p>
             </section>
           </Form>
         </m.div>
